@@ -223,7 +223,10 @@ public class CustomerDao {
             //提交sql语句
             List<Customer> beanList = qr.query(sql.append(whereSql).append(limitSql).toString(),
                     new BeanListHandler<>(Customer.class),
-                    params);
+                    params.toArray());
+            //将组合成的url封装到pageBean中
+
+            System.out.println(beanList.size()+ whereSql.toString()+ " "+ criteria.getGender());
             pageBean.setBeanList(beanList);
             return pageBean;
         } catch (SQLException e) {

@@ -1,6 +1,5 @@
 package com.cstm.web.servlet;
 
-import cn.itcast.servlet.BaseServlet;
 import cn.itcast.utils.CommonUtils;
 import com.cstm.domain.Customer;
 import com.cstm.domain.PageBean;
@@ -13,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /*
@@ -68,6 +68,7 @@ public class CustomerServlet extends BaseServlet {
         int pagecode = getPageCode(request);//得到pagecode
         int pageSize = 10;//给定pagesize值
         PageBean<Customer> pageBean = customerService.findAll(pagecode, pageSize);//传递pc,ps，获得pagebean
+        pageBean.setUrl(getUrl(request));
         request.setAttribute("pageBean",pageBean);//把pagebean保存到request域
         return "f:/list.jsp";//转发到list.jsp
     }
@@ -160,11 +161,67 @@ public class CustomerServlet extends BaseServlet {
          * 5。 转发到list.jsp
          * */
         //获取条件
+        //System.out.println(request.getParameter("cname"));
         Customer criteria = CommonUtils.toBean(request.getParameterMap(),Customer.class);
+        //处理get请求方式的编码问题
+        //criteria = encoding(criteria);
+        //System.out.println(criteria.getGender()+criteria.getCname());
+
         int pagecode = getPageCode(request);//得到pagecode
         int pageSize = 10;//给定pagesize值
         PageBean<Customer> pageBean = customerService.query(criteria, pagecode, pageSize);
+
+
+        pageBean.setUrl(getUrl(request));
+
         request.setAttribute("pageBean",pageBean);//把pagebean保存到request域
         return "f:/list.jsp";//转发到list.jsp
+    }
+    /*
+    * 截取url,这里得到的url包含query.jsp提交的查询条件参数，
+    * 利用PageBean中的url转发到list.jsp,页面就能直接把pagebean中的url拿来使用，
+    * 这样在点击页码时就能从pagebean.url获得查询条件参数。
+    * */
+    private String getUrl(HttpServletRequest request){
+        String contextPath = request.getContextPath();//获取项目名
+        String servletPath = request.getServletPath();//获取servlet路径
+        String queryString = request.getQueryString();//获取参数，包含query.jsp提交的查询条件参数
+        //在保存url前去掉可能存在的"pageCode"参数，只保存包含条件参数的url
+        if(queryString.contains("&pageCode=")){
+            int index = queryString.lastIndexOf("&pageCode=");//获取pageCode所在的位置
+            queryString = queryString.substring(0,index);//将字符串中的"&pageCode="字段截去。
+        }
+        return contextPath + servletPath + "?" + queryString;
+    }
+    /*
+    * 处理get请求方式的各参数编码问题
+    * */
+    private Customer encoding(Customer criteria) {
+        String cname = criteria.getCname();
+        String gender = criteria.getGender();
+        String cellphone = criteria.getCellphone();
+        String email = criteria.getEmail();
+        try {
+            if(cname != null && cname.trim().isEmpty()){
+                cname = new String(cname.getBytes("ISO-8859-1"),"utf-8");
+                criteria.setCname(cname);
+            }
+            if(gender == null && gender.trim().isEmpty()){
+                gender = new String(gender.getBytes("ISO-8859-1"),"utf-8");
+                criteria.setGender(gender);
+            }
+            if(cellphone != null && cellphone.trim().isEmpty()){
+                cellphone = new String(cellphone.getBytes("ISO-8859-1"),"utf-8");
+                criteria.setCellphone(cellphone);
+            }
+            if(email != null && email.trim().isEmpty()){
+                email = new String(email.getBytes("ISO-8859-1"),"utf-8");
+                criteria.setEmail(email);
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return criteria;
     }
 }

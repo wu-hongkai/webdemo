@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="itcast-tools">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../apache-tomcat-8.5.50/lib/itcast-tools.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../apache-tomcat-8.5.50/lib/itcast-tools.jar!/" />
+    </SOURCES>
+  </library>
+</component>

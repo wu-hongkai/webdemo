@@ -53,9 +53,9 @@
    --%>
   <center>
 	  第${pageBean.pageCode}页/共${pageBean.totalPage}页
-	  <a href="<c:url value='/CustomerServlet?method=findAll&pageCode=1'/>">首页</a>
+	  <a href="${pageBean.url}&pageCode=1">首页</a>
 	  <c:if test="${pageBean.pageCode > 1}">
-	  <a href="<c:url value='/CustomerServlet?method=findAll&pageCode=${pageBean.pageCode-1}'/>">上一页</a>
+	  <a href="${pageBean.url}&pageCode=${pageBean.pageCode-1}">上一页</a>
 	  </c:if>
 
 	  <%--计算begin,end--%>
@@ -90,16 +90,16 @@
 				  ${i}
 			  </c:when>
 			  <c:otherwise>
-				  <a href="<c:url value='/CustomerServlet?method=findAll&pageCode=${i }'/> ">[${i }]</a>
+				  <a href="${pageBean.url}&pageCode=${i } ">[${i }]</a>
 			  </c:otherwise>
 		  </c:choose>
 	  </c:forEach>
 
 
 	<c:if test="${pageBean.pageCode < pageBean.totalPage}">
-	  <a href="<c:url value='/CustomerServlet?method=findAll&pageCode=${pageBean.pageCode+1}'/>">下一页</a>
+	  <a href="${pageBean.url}&pageCode=${pageBean.pageCode+1}">下一页</a>
 	</c:if>
-		<a href="<c:url value='/CustomerServlet?method=findAll&pageCode=${pageBean.totalPage}'/>">尾页</a>
+		<a href="${pageBean.url}&pageCode=${pageBean.totalPage}">尾页</a>
   </center>
 
   </body>

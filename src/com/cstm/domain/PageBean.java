@@ -8,17 +8,7 @@ public class PageBean<T> {
     private int totalRecord;//总记录数total record
     private int pageSize;//每页记录数page size
     private List<T> beanList;//当前页的数据
-
-    public PageBean(){
-        //init();
-    }
-    public PageBean(int pageCode, int totalRecord, int pageSize, List<T> beanList) {
-        this.pageCode = pageCode;
-        this.totalRecord = totalRecord;
-        this.pageSize = pageSize;
-        this.beanList = beanList;
-    }
-
+    private String url;//多条件查询页面带参的url
 
     public int getPageCode() {
         return pageCode;
@@ -62,5 +52,13 @@ public class PageBean<T> {
 
     public void setBeanList(List<T> beanList) {
         this.beanList = beanList;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
