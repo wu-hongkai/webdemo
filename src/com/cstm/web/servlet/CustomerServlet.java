@@ -3,6 +3,7 @@ package com.cstm.web.servlet;
 import cn.itcast.servlet.BaseServlet;
 import cn.itcast.utils.CommonUtils;
 import com.cstm.domain.Customer;
+import com.cstm.domain.PageBean;
 import com.cstm.service.CustomerService;
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -27,7 +28,7 @@ public class CustomerServlet extends BaseServlet {
     /*
     * 添加客户
     * */
-    public String add(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public String add(HttpServletRequest request, HttpServletResponse response) {
         /*
         * 1.封装表单到Customer对象
         * 2.补全cid，使用UUID
@@ -45,16 +46,43 @@ public class CustomerServlet extends BaseServlet {
     /*
     *查询所有客户 version1 ：未分页
     */
+//    public String findAll(HttpServletRequest request, HttpServletResponse response){
+//        /*
+//        * 1.调用service方法，得到查询结果
+//        * 2.查询结果保存到request域中
+//        * 3.转发到list.jsp
+//        * */
+//        request.setAttribute("cstmList",customerService.findAll());
+//        return "f:/list.jsp";
+//    }
+    /*
+    * 查询所有客户 version2 ：分页
+    * */
     public String findAll(HttpServletRequest request, HttpServletResponse response){
         /*
-        * 1.调用service方法，得到查询结果
-        * 2.查询结果保存到request域中
-        * 3.转发到list.jsp
-        * */
-        request.setAttribute("cstmList",customerService.findAll());
-        return "f:/list.jsp";
+         * 1.获取页面传递的pagecode
+         * 2.给定pagesize的值
+         * 3.使用pagecode和pagesize调用service方法，得到pagebean，保存到request域
+         * 4.转发到list.jsp
+         * */
+        int pagecode = getPageCode(request);//得到pagecode
+        int pageSize = 10;//给定pagesize值
+        PageBean<Customer> pageBean = customerService.findAll(pagecode, pageSize);//传递pc,ps，获得pagebean
+        request.setAttribute("pageBean",pageBean);//把pagebean保存到request域
+        return "f:/list.jsp";//转发到list.jsp
     }
-
+    /*
+    * 获取pagecode
+    *   如果pagecode不存在，说明pagecode=1
+    *   如果pagecode存在，需要转成int类型
+    * */
+    private int getPageCode(HttpServletRequest request){
+        String value = request.getParameter("pageCode");
+        if(value == null || value.trim().isEmpty()){
+            return 1;
+        }
+        return Integer.parseInt(value);
+    }
 
 
 
@@ -103,19 +131,40 @@ public class CustomerServlet extends BaseServlet {
         request.setAttribute("msg","删除成功");
         return "f:/msg.jsp";
     }
-    /*
-    * 高级查询
-    * */
+//    /*
+//    * 高级查询 version1 未分页
+//    * */
+//    public String query(HttpServletRequest request, HttpServletResponse response){
+//        /*
+//        * 1. 封装表单到customer对象，只需要四个属性，这些属性组合起来就是查询条件
+//        * 2. 调用service方法，得到List<Customer>
+//        * 3. 保存查询结果到request域
+//        * 4. 转发到list.jsp
+//        * */
+//        Customer criteria = CommonUtils.toBean(request.getParameterMap(),Customer.class);
+//        List<Customer> cstmList = customerService.query(criteria);
+//        request.setAttribute("cstmList",cstmList);
+//        return "f:/list.jsp";
+//    }
+/*
+ * 高级查询 version2 分页
+ * 类比findAll的version2进行修改
+ * */
     public String query(HttpServletRequest request, HttpServletResponse response){
         /*
-        * 1. 封装表单到customer对象，只需要四个属性，这些属性组合起来就是查询条件
-        * 2. 调用service方法，得到List<Customer>
-        * 3. 保存查询结果到request域
-        * 4. 转发到list.jsp
-        * */
+         * 0. 把条件封装到Customer对象中
+         * 1. 得到pageCode
+         * 2. 给定pageSize
+         * 3. 使用pc,ps调用service方法得到pageBean
+         * 4. 把pageBean保存到request域
+         * 5。 转发到list.jsp
+         * */
+        //获取条件
         Customer criteria = CommonUtils.toBean(request.getParameterMap(),Customer.class);
-        List<Customer> cstmList = customerService.query(criteria);
-        request.setAttribute("cstmList",cstmList);
-        return "f:/list.jsp";
+        int pagecode = getPageCode(request);//得到pagecode
+        int pageSize = 10;//给定pagesize值
+        PageBean<Customer> pageBean = customerService.query(criteria, pagecode, pageSize);
+        request.setAttribute("pageBean",pageBean);//把pagebean保存到request域
+        return "f:/list.jsp";//转发到list.jsp
     }
 }

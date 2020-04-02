@@ -9,21 +9,16 @@ public class PageBean<T> {
     private int pageSize;//每页记录数page size
     private List<T> beanList;//当前页的数据
 
+    public PageBean(){
+        //init();
+    }
     public PageBean(int pageCode, int totalRecord, int pageSize, List<T> beanList) {
         this.pageCode = pageCode;
         this.totalRecord = totalRecord;
         this.pageSize = pageSize;
         this.beanList = beanList;
+    }
 
-        init();
-    }
-    //单独计算totalpage，注意它的取值是向上取整
-    private void init(){
-        this.totalPage = totalRecord / pageSize;
-        if(totalRecord % pageSize != 0){
-            this.totalPage++;
-        }
-    }
 
     public int getPageCode() {
         return pageCode;
@@ -37,9 +32,13 @@ public class PageBean<T> {
         return totalPage;
     }
 
-//    public void setTotalPage(int totalPage) {
-//        this.totalPage = totalPage;
-//    }
+    //单独计算totalpage，注意它的取值是向上取整
+    public void setTotalPage(int totalRecord, int pageSize) {
+        this.totalPage = totalRecord / pageSize;
+        if(totalRecord % pageSize != 0){
+            this.totalPage++;
+        }
+    }
 
     public int getTotalRecord() {
         return totalRecord;
